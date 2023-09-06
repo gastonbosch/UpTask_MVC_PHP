@@ -1,0 +1,5 @@
+host: nyc.domcloud.id
+user: expensive-ice-jil
+pass: 1FsE-g4gy74_UV2d(K
+
+database: expensive_ice_jil__db

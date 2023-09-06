@@ -14,13 +14,13 @@ class TareaController {
         if(!$proyectoId) header('Location: /dashboard');
 
         $proyecto = Proyecto::where('url', $proyectoId);
-
+        
         session_start();
 
-        if(!$proyecto || $proyecto->propietarioId !== $_SESSION['id']) header('Location: /404');
+        if(!$proyecto || $proyecto->propietarioid !== $_SESSION['id']) header('Location: /404');
 
-        $tareas = Tarea::belongsTo('proyectoId', $proyecto->id);
-
+        $tareas = Tarea::belongsTo('proyectoid', $proyecto->id);
+      
         echo json_encode(['tareas' => $tareas]);
     }
 
@@ -33,7 +33,7 @@ class TareaController {
 
             $proyecto = Proyecto::where('url', $proyectoId);
 
-            if(!$proyecto || $proyecto->propietarioId !== $_SESSION['id']) {
+            if(!$proyecto || $proyecto->propietarioid !== $_SESSION['id']) {
                 $respuesta = [
                     'tipo' => 'error',
                     'mensaje' => 'Hubo un Error al agregar la tarea'
@@ -44,7 +44,7 @@ class TareaController {
             
             // Todo bien, instanciar y crear la tarea
             $tarea = new Tarea($_POST);
-            $tarea->proyectoId = $proyecto->id;
+            $tarea->proyectoid = $proyecto->id;
             $resultado = $tarea->guardar();
             $respuesta = [
                 'tipo' => 'exito',
@@ -63,7 +63,7 @@ class TareaController {
 
             session_start();
 
-            if(!$proyecto || $proyecto->propietarioId !== $_SESSION['id']) {
+            if(!$proyecto || $proyecto->propietarioid !== $_SESSION['id']) {
                 $respuesta = [
                     'tipo' => 'error',
                     'mensaje' => 'Hubo un Error al actualizar la tarea'
@@ -73,7 +73,7 @@ class TareaController {
             } 
 
             $tarea = new Tarea($_POST);
-            $tarea->proyectoId = $proyecto->id;
+            $tarea->proyectoid = $proyecto->id;
 
             $resultado = $tarea->guardar();
             if($resultado) {
@@ -97,7 +97,7 @@ class TareaController {
 
             session_start();
 
-            if(!$proyecto || $proyecto->propietarioId !== $_SESSION['id']) {
+            if(!$proyecto || $proyecto->propietarioid !== $_SESSION['id']) {
                 $respuesta = [
                     'tipo' => 'error',
                     'mensaje' => 'Hubo un Error al actualizar la tarea'

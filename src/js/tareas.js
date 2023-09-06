@@ -225,7 +225,7 @@
         datos.append('proyectoId', obtenerProyecto());
 
         try {
-            const url = `${location.origin}/api/tarea'`;
+            const url = `${location.origin}/api/tarea`;
             const respuesta = await fetch(url, {
                 method: 'POST',
                 body: datos
@@ -250,7 +250,7 @@
                     id: String(resultado.id),
                     nombre: tarea,
                     estado: "0",
-                    proyectoId: resultado.proyectoId
+                    proyectoid: resultado.proyectoId
                 }
 
                 tareas = [...tareas, tareaObj];
@@ -270,7 +270,7 @@
 
     async function actualizarTarea(tarea) {
 
-        const {estado, id, nombre, proyectoId} = tarea;
+        const {estado, id, nombre, proyectoid} = tarea;
         
         const datos = new FormData();
         datos.append('id', id);
@@ -301,8 +301,6 @@
                     modal.remove();
                 }
                
-                
-
                 tareas = tareas.map(tareaMemoria => {
                     if(tareaMemoria.id === id) {
                         tareaMemoria.estado = estado;
