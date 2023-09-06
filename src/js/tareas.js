@@ -32,9 +32,11 @@
         try {
             const id = obtenerProyecto();
             const url = `${location.origin}/api/tareas?id=${id}`;
+            console.log(url);
             const respuesta = await fetch(url);
+            console.log(respuesta);
             const resultado = await respuesta.json();
-
+            console.log(resultado);
             tareas = resultado.tareas;
             mostrarTareas();
         
