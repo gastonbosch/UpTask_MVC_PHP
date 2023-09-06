@@ -20,7 +20,7 @@ class TareaController {
         if(!$proyecto || $proyecto->propietarioid !== $_SESSION['id']) header('Location: /404');
 
         $tareas = Tarea::belongsTo('proyectoid', $proyecto->id);
-      
+        debuguear($tareas);
         echo json_encode(['tareas' => $tareas]);
     }
 
