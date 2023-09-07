@@ -1,83 +1,90 @@
-<?php 
+<?php
+   
+    namespace Classes;
 
-namespace Classes;
+    use Brevo\Client\Configuration;
+    use Brevo\Client\Api\TransactionalEmailsApi;
+    use \Brevo\Client\Model\SendSmtpEmail;
+    use Exception;
+    use GuzzleHttp;
 
-use PHPMailer\PHPMailer\PHPMailer;
+    class EmailBrevo {
+        
+        protected $email;
+        protected $nombre;
+        protected $token;
+    
+        public function __construct($email, $nombre, $token)
+        {
+            $this->email = $email;
+            $this->nombre = $nombre;
+            $this->token = $token;
+    
+        }
 
-class Email {
-    protected $email;
-    protected $nombre;
-    protected $token;
+        public function enviarConfirmacion(){
+            
+            $config = Configuration::getDefaultConfiguration()->setApiKey('api-key', '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');
 
-    public function __construct($email, $nombre, $token)
-    {
-        $this->email = $email;
-        $this->nombre = $nombre;
-        $this->token = $token;
+            $apiInstance = new TransactionalEmailsApi(
+                new GuzzleHttp\Client(),
+                $config
+            );
+
+            $contenido = '<html>';
+            $contenido .= "<p><strong>Hola " . $this->nombre . "</strong> Has Creado tu cuenta en UpTask, solo debes confirmarla en el siguiente enlace</p>";
+            $contenido .= "<p>Presiona aquí: <a href='".$_ENV['APP_URL']."/confirmar?token=" . $this->token . "'>Confirmar Cuenta</a></p>";
+            $contenido .= "<p>Si tu no creaste esta cuenta, puedes ignorar este mensaje</p>";
+            $contenido .= '</html>';    
+
+            $sendSmtpEmail = new SendSmtpEmail([
+                'subject' => 'Confirma tu Cuenta',
+                'sender' => ['name' => 'UpTask', 'email' => 'uptask@sendinblue.com'],
+                //'replyTo' => ['name' => 'Sendinblue', 'email' => 'contact@sendinblue.com'],
+                'to' => [[ 'name' => $this->nombre, 'email' => $this->email]],
+                'htmlContent' => '<html><body><h1>This is a transactional email {{params.bodyMessage}}</h1></body></html>',
+                'params' => ['bodyMessage' => $contenido]
+            ]); 
+
+            try {
+                $result = $apiInstance->sendTransacEmail($sendSmtpEmail);
+                print_r($result);
+            } catch (Exception $e) {
+                echo 'Exception when calling TransactionalEmailsApi->sendTransacEmail: ', $e->getMessage(), PHP_EOL;
+            }
+        }
+
+        public function enviarInstrucciones(){
+            $config = Configuration::getDefaultConfiguration()->setApiKey('api-key', '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');
+
+            $apiInstance = new TransactionalEmailsApi(
+                new GuzzleHttp\Client(),
+                $config
+            );
+
+            $contenido = '<html>';
+            $contenido .= "<p><strong>Hola " . $this->nombre . "</strong> Parece que has olvidado tu password, sigue el siguiente enlace para recuperarlo</p>";
+            $contenido .= "<p>Presiona aquí: <a href='".$_ENV['APP_URL']."/reestablecer?token=" . $this->token . "'>Reestablecer Password</a></p>";
+            $contenido .= "<p>Si tu no creaste esta cuenta, puedes ignorar este mensaje</p>";
+            $contenido .= '</html>';
+
+            $sendSmtpEmail = new SendSmtpEmail([
+                'subject' => 'Reestablece tu Password',
+                'sender' => ['name' => 'UpTask', 'email' => 'uptask@sendinblue.com'],
+                //'replyTo' => ['name' => 'Sendinblue', 'email' => 'contact@sendinblue.com'],
+                'to' => [[ 'name' => $this->nombre, 'email' => $this->email]],
+                'htmlContent' => '<html><body><h1>This is a transactional email {{params.bodyMessage}}</h1></body></html>',
+                'params' => ['bodyMessage' => $contenido]
+            ]); 
+
+            try {
+                $result = $apiInstance->sendTransacEmail($sendSmtpEmail);
+                print_r($result);
+            } catch (Exception $e) {
+                echo 'Exception when calling TransactionalEmailsApi->sendTransacEmail: ', $e->getMessage(), PHP_EOL;
+            }
+        }
 
     }
 
-    public function enviarConfirmacion() {
-
-        $mail = new PHPMailer();
-        $mail->isSMTP();
-
-        $mail->SMTPAuth = true;
-        $mail->Host = $_ENV['MAIL_HOST'];
-        $mail->Port = $_ENV['MAIL_PORT'];
-        $mail->Username = $_ENV['MAIL_USER'];
-        $mail->Password = $_ENV['MAIL_PASS'];
-
-
-        $mail->setFrom('cuentas@uptask.com');
-        $mail->addAddress('cuentas@uptask.com', 'uptask.com');
-        $mail->Subject = 'Confirma tu Cuenta';
-
-        $mail->isHTML(TRUE);
-        $mail->CharSet = 'UTF-8';
-
-        $contenido = '<html>';
-        $contenido .= "<p><strong>Hola " . $this->nombre . "</strong> Has Creado tu cuenta en UpTask, solo debes confirmarla en el siguiente enlace</p>";
-        $contenido .= "<p>Presiona aquí: <a href='".$_ENV['APP_URL']."/confirmar?token=" . $this->token . "'>Confirmar Cuenta</a></p>";
-        $contenido .= "<p>Si tu no creaste esta cuenta, puedes ignorar este mensaje</p>";
-        $contenido .= '</html>';
-
-        $mail->Body = $contenido;
-
-
-        // Enviar el email
-        $mail->send();
-    }
-
-
-    public function enviarInstrucciones() {
-
-        $mail = new PHPMailer();
-        $mail->isSMTP();
-        $mail->SMTPAuth = true;
-        $mail->Host = $_ENV['MAIL_HOST'];
-        $mail->Port = $_ENV['MAIL_PORT'];
-        $mail->Username = $_ENV['MAIL_USER'];
-        $mail->Password = $_ENV['MAIL_PASS'];
-
-
-        $mail->setFrom('cuentas@uptask.com');
-        $mail->addAddress('cuentas@uptask.com', 'uptask.com');
-        $mail->Subject = 'Reestablece tu Password';
-
-        $mail->isHTML(TRUE);
-        $mail->CharSet = 'UTF-8';
-
-        $contenido = '<html>';
-        $contenido .= "<p><strong>Hola " . $this->nombre . "</strong> Parece que has olvidado tu password, sigue el siguiente enlace para recuperarlo</p>";
-        $contenido .= "<p>Presiona aquí: <a href='".$_ENV['APP_URL']."/reestablecer?token=" . $this->token . "'>Reestablecer Password</a></p>";
-        $contenido .= "<p>Si tu no creaste esta cuenta, puedes ignorar este mensaje</p>";
-        $contenido .= '</html>';
-
-        $mail->Body = $contenido;
-
-
-        // Enviar el email
-        $mail->send();
-    }
-}
+?>
