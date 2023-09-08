@@ -8,7 +8,7 @@
     use Exception;
     use GuzzleHttp;
 
-    class EmailBrevo {
+    class Email {
         
         protected $email;
         protected $nombre;
