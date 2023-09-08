@@ -24,7 +24,7 @@
 
         public function enviarConfirmacion(){
             
-            $config = Configuration::getDefaultConfiguration()->setApiKey('api-key', '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');
+            $config = Configuration::getDefaultConfiguration()->setApiKey('api-key', $_ENV['API_KEY_BREVO']);
 
             $apiInstance = new TransactionalEmailsApi(
                 new GuzzleHttp\Client(),
@@ -55,7 +55,7 @@
         }
 
         public function enviarInstrucciones(){
-            $config = Configuration::getDefaultConfiguration()->setApiKey('api-key', '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');
+            $config = Configuration::getDefaultConfiguration()->setApiKey('api-key', $_ENV['API_KEY_BREVO']);
 
             $apiInstance = new TransactionalEmailsApi(
                 new GuzzleHttp\Client(),
