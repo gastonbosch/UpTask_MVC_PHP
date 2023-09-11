@@ -2,11 +2,12 @@
    
     namespace Classes;
 
-use Brevo\Client\Api\TransactionalEmailsApi as ApiTransactionalEmailsApi;
-use Brevo\Client\Configuration as ClientConfiguration;
-use Brevo\Client\Model\SendSmtpEmail as ModelSendSmtpEmail;
-use Brevo\Client\TransactionalEmailsApiTest;
-use SendinBlue\Client\Configuration;
+    use Brevo\Client\Api\TransactionalEmailsApi as ApiTransactionalEmailsApi;
+    use Brevo\Client\Configuration as ClientConfiguration;
+    use Brevo\Client\Model\SendSmtpEmail as ModelSendSmtpEmail;
+    
+    use Brevo\Client\TransactionalEmailsApiTest;
+    use SendinBlue\Client\Configuration;
     use SendinBlue\Client\Api\TransactionalEmailsApi;
     use \SendinBlue\Client\Model\SendSmtpEmail;
     use Exception;
@@ -27,40 +28,42 @@ use SendinBlue\Client\Configuration;
         }
 
         public function enviarConfirmacion(){
-            
-            $config = ClientConfiguration::getDefaultConfiguration()->setApiKey('api-key', $_ENV['API_KEY_BREVO']);
-
-            $apiInstance = new ApiTransactionalEmailsApi(
-                new GuzzleHttp\Client(),
-                $config
-            );
-
-            /*$contenido = '<html>';
-            $contenido .= "<p><strong>Hola " . $this->nombre . "</strong> Has Creado tu cuenta en UpTask, solo debes confirmarla en el siguiente enlace</p>";
-            $contenido .= "<p>Presiona aquí: <a href='".$_ENV['APP_URL']."/confirmar?token=" . $this->token . "'>Confirmar Cuenta</a></p>";
-            $contenido .= "<p>Si tu no creaste esta cuenta, puedes ignorar este mensaje</p>";
-            $contenido .= '</html>';    
-
-            $sendSmtpEmail = new SendSmtpEmail([
-                'subject' => 'Confirma tu Cuenta',
-                'sender' => ['name' => 'UpTask', 'email' => 'uptask@sendinblue.com'],
-                //'replyTo' => ['name' => 'Sendinblue', 'email' => 'contact@sendinblue.com'],
-                'to' => [[ 'name' => $this->nombre, 'email' => $this->email]],
-                'htmlContent' => '{{params.bodyMessage}}',
-                'params' => ['bodyMessage' => $contenido]
-            ]); */
-
-            $sendSmtpEmail = new ModelSendSmtpEmail(); // \SendinBlue\Client\Model\SendSmtpEmail | Values to send a transactional email
-            $sendSmtpEmail['to'] = array(array('email'=>$this->email, 'name'=>$this->nombre));
-            $sendSmtpEmail['templateId'] = 1;
-            $sendSmtpEmail['params'] = array('nombre'=>$this->nombre, 'token'=>$this->token, 'dominio'=>$_ENV['APP_URL']);
-            $sendSmtpEmail['headers'] = array('api-key'=>'xkeysib-'||$_ENV['API_KEY_BREVO'], 
-                                              'content-type'=>'application/json',
-                                              'accept'=>'application/json');
             try {
+                $config = ClientConfiguration::getDefaultConfiguration()->setApiKey('api-key', $_ENV['API_KEY_BREVO']);
+
+                $apiInstance = new ApiTransactionalEmailsApi(
+                    new GuzzleHttp\Client(),
+                    $config
+                );
+
+                $sendSmtpEmail = new ModelSendSmtpEmail([
+                    'subject' => 'Confirma tu Cuenta',
+                    'sender' => ['name' => 'Gaston', 'email' => 'gastonbosch@hotmail.com'],
+                    //'replyTo' => ['name' => 'Sendinblue', 'email' => 'contact@sendinblue.com'],
+                    //'to' => [[ 'name' => $this->nombre, 'email' => $this->email]],
+                    'to' => [[ 'name' => $this->nombre, 'email' => $this->email]],
+                    'htmlContent' => '<html><body><p><strong>Hola {{params.nombre}}</strong> 
+                    Has Creado tu cuenta en UpTask, solo debes confirmarla en el siguiente enlace</p>
+                    <p>Presiona aquí: <a href="{{params.dominio}}/confirmar?token={{params.token}}">Confirmar Cuenta</a></p>
+                    <p>Si tu no creaste esta cuenta, puedes ignorar este mensaje</p></body></html>',
+                    'params' => ['nombre' => $this->nombre, 'token'=>$this->token, 'dominio'=>$_ENV['APP_URL']]
+                ]); 
+                
+                /*$sendSmtpEmail = new ModelSendSmtpEmail(); // \SendinBlue\Client\Model\SendSmtpEmail | Values to send a transactional email
+                $sendSmtpEmail['to'] = array(array('email'=>$this->email, 'name'=>$this->nombre));
+                $sendSmtpEmail['templateId'] = 1;
+                $sendSmtpEmail['params'] = array('nombre'=>$this->nombre, 'token'=>$this->token, 'dominio'=>$_ENV['APP_URL']);
+                $sendSmtpEmail['headers'] = array('api-key'=>'xkeysib-'||$_ENV['API_KEY_BREVO'], 
+                                                'content-type'=>'application/json',
+                                                'accept'=>'application/json');*/
+                
+                
+                
+                //debuguear($sendSmtpEmail);
                 $result = $apiInstance->sendTransacEmail($sendSmtpEmail);
-                print_r($result);
+                //print_r($result);
             } catch (Exception $e) {
+                //debuguear($e->getMessage());
                 echo 'Exception when calling TransactionalEmailsApi->sendTransacEmail: ', $e->getMessage(), PHP_EOL;
             }
         }
