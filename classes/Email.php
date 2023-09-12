@@ -69,36 +69,33 @@
         }
 
         public function enviarInstrucciones(){
-            $config = ClientConfiguration::getDefaultConfiguration()->setApiKey('api-key', $_ENV['API_KEY_BREVO']);
-
-            $apiInstance = new ApiTransactionalEmailsApi(
-                new GuzzleHttp\Client(),
-                $config
-            );
-
-            $contenido = '<html>';
-            $contenido .= "<p><strong>Hola " . $this->nombre . "</strong> Parece que has olvidado tu password, sigue el siguiente enlace para recuperarlo</p>";
-            $contenido .= "<p>Presiona aquí: <a href='".$_ENV['APP_URL']."/reestablecer?token=" . $this->token . "'>Reestablecer Password</a></p>";
-            $contenido .= "<p>Si tu no creaste esta cuenta, puedes ignorar este mensaje</p>";
-            $contenido .= '</html>';
-
-            $sendSmtpEmail = new ModelSendSmtpEmail([
-                'subject' => 'Reestablece tu Password',
-                'sender' => ['name' => 'UpTask', 'email' => 'uptask@sendinblue.com'],
-                //'replyTo' => ['name' => 'Sendinblue', 'email' => 'contact@sendinblue.com'],
-                'to' => [[ 'name' => $this->nombre, 'email' => $this->email]],
-                'htmlContent' => '{{params.bodyMessage}}',
-                'params' => ['bodyMessage' => $contenido]
-            ]); 
 
             try {
+                $config = ClientConfiguration::getDefaultConfiguration()->setApiKey('api-key', $_ENV['API_KEY_BREVO']);
+
+                $apiInstance = new ApiTransactionalEmailsApi(
+                    new GuzzleHttp\Client(),
+                    $config
+                );
+
+                $sendSmtpEmail = new ModelSendSmtpEmail([
+                    'subject' => 'Reestablecer password',
+                    'sender' => ['name' => 'Gaston', 'email' => 'gastonbosch@hotmail.com'],
+                    //'replyTo' => ['name' => 'Sendinblue', 'email' => 'contact@sendinblue.com'],
+                    //'to' => [[ 'name' => $this->nombre, 'email' => $this->email]],
+                    'to' => [[ 'name' => $this->nombre, 'email' => $this->email]],
+                    'htmlContent' => '<html><p><strong>Hola {{params.nombre}}</strong> Parece que has olvidado tu password, sigue el siguiente enlace para recuperarlo</p>
+                    <p>Presiona aquí: <a href="{{params.dominio}}/reestablecer?token={{params.token}}">Reestablecer Password</a></p>
+                    <p>Si tu no creaste esta cuenta, puedes ignorar este mensaje</p></html>',
+                    'params' => ['nombre' => $this->nombre, 'token'=>$this->token, 'dominio'=>$_ENV['APP_URL']]
+                ]); 
+                
                 $result = $apiInstance->sendTransacEmail($sendSmtpEmail);
-                print_r($result);
+                
             } catch (Exception $e) {
                 echo 'Exception when calling TransactionalEmailsApi->sendTransacEmail: ', $e->getMessage(), PHP_EOL;
             }
         }
-
     }
 
 ?>
